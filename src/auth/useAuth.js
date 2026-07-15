@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
 import { ALLOWED_DOMAIN, GOOGLE_CLIENT_ID } from '../config/env';
 
+const ALLOWED_DOMAINS = ALLOWED_DOMAIN.split(',').map(d => d.trim()).filter(Boolean);
+
 export function useAuth() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState('');
@@ -38,8 +40,8 @@ export function useAuth() {
           const email = (profile.email || '').toLowerCase();
           const domain = email.split('@')[1] || '';
 
-          if (domain !== ALLOWED_DOMAIN) {
-            setError(`❌ Acceso denegado.\n\nSolo cuentas @${ALLOWED_DOMAIN} pueden acceder.\nCorreo detectado: ${email}`);
+          if (!ALLOWED_DOMAINS.includes(domain)) {
+            setError(`❌ Acceso denegado.\n\nSolo cuentas @${ALLOWED_DOMAINS.join(', @')} pueden acceder.\nCorreo detectado: ${email}`);
             setLoading(false);
             return;
           }
