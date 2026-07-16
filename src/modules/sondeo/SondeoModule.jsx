@@ -119,9 +119,13 @@ export function SondeoModule({ user }) {
       declaracionAceptada: true,
     };
 
+    if (!APPS_SCRIPT_SONDEO) {
+      alert('Error de configuración: la URL del servidor no está definida.');
+      return;
+    }
+
     setSubmitting(true);
 
-    // Preservar el método iframe para compatibilidad con Apps Script (evita CORS)
     let iframe = document.getElementById('sondeo_iframe');
     if (!iframe) {
       iframe = document.createElement('iframe');
@@ -162,6 +166,8 @@ export function SondeoModule({ user }) {
 
     setTimeout(() => {
       window.removeEventListener('message', handler);
+      setSubmitting(false);
+      alert('No se recibió respuesta del servidor. Verifica que el formulario fue enviado.');
     }, 15000);
   }
 

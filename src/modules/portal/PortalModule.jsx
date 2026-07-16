@@ -72,6 +72,12 @@ export function PortalModule({ user }) {
       justificacion: form.justificacion.trim(),
     };
 
+    if (!APPS_SCRIPT_PORTAL) {
+      setStatus('error');
+      setSending(false);
+      return;
+    }
+
     try {
       const body = new URLSearchParams();
       body.append('payload', JSON.stringify(payload));
