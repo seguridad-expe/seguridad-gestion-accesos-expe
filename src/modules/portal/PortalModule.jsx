@@ -39,11 +39,18 @@ export function PortalModule({ user }) {
     const errs = {};
     if (!form.clienteNombre.trim()) errs.clienteNombre = '⚠ Campo obligatorio';
     if (!form.aplicativo) errs.aplicativo = '⚠ Selecciona un aplicativo';
+    
+    // Condición para validar 'Otro Aplicativo'
     if (form.aplicativo === 'OTRO') {
       if (!form.otroAplicativo.trim()) errs.otroAplicativo = '⚠ Especifica el aplicativo';
+    }
+
+    // Condición para validar 'Correo del Responsable'
+    if (form.tipoAcceso === 'Externo' || form.aplicativo === 'OTRO') {
       if (!form.correoResponsableManual.trim()) errs.correoResponsableManual = '⚠ Campo obligatorio';
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correoResponsableManual)) errs.correoResponsableManual = '⚠ Correo inválido';
     }
+
     if (!form.justificacion.trim()) errs.justificacion = '⚠ Campo obligatorio';
     return errs;
   }
@@ -177,35 +184,37 @@ export function PortalModule({ user }) {
             {errors.aplicativo && <p className="field-error">{errors.aplicativo}</p>}
           </div>
 
+          {/* Renderizado condicional EXCLUSIVO para "Especifica el aplicativo" */}
           {form.aplicativo === 'OTRO' && (
-            <>
-              <div className="field">
-                <label className="field-label">Especifica el aplicativo <span className="required">*</span></label>
-                <input
-                  type="text"
-                  placeholder="Ej: Jira, Figma, Adobe, etc."
-                  value={form.otroAplicativo}
-                  onChange={e => set('otroAplicativo', e.target.value)}
-                  className={errors.otroAplicativo ? 'invalid' : ''}
-                />
-                {errors.otroAplicativo && <p className="field-error">{errors.otroAplicativo}</p>}
-              </div>
+            <div className="field">
+              <label className="field-label">Especifica el aplicativo <span className="required">*</span></label>
+              <input
+                type="text"
+                placeholder="Ej: Jira, Figma, Adobe, etc."
+                value={form.otroAplicativo}
+                onChange={e => set('otroAplicativo', e.target.value)}
+                className={errors.otroAplicativo ? 'invalid' : ''}
+              />
+              {errors.otroAplicativo && <p className="field-error">{errors.otroAplicativo}</p>}
+            </div>
+          )}
 
-              <div className="field">
-                <label className="field-label">Correo del responsable del acceso <span className="required">*</span></label>
-                <input
-                  type="email"
-                  placeholder="responsable@cliente.com o lider@experimentality.co"
-                  value={form.correoResponsableManual}
-                  onChange={e => set('correoResponsableManual', e.target.value)}
-                  className={errors.correoResponsableManual ? 'invalid' : ''}
-                />
-                <p style={{ fontSize: 11, color: 'var(--white-muted)', marginTop: 5, fontFamily: 'var(--font-mono)' }}>
-                  Persona que debe recibir la notificación para crear el acceso.
-                </p>
-                {errors.correoResponsableManual && <p className="field-error">{errors.correoResponsableManual}</p>}
-              </div>
-            </>
+          {/* Renderizado condicional para "Correo del responsable" (Aparece si es Externo O si es OTRO) */}
+          {(form.tipoAcceso === 'Externo' || form.aplicativo === 'OTRO') && (
+            <div className="field">
+              <label className="field-label">Correo del responsable del acceso <span className="required">*</span></label>
+              <input
+                type="email"
+                placeholder="responsable@cliente.com o lider@experimentality.co"
+                value={form.correoResponsableManual}
+                onChange={e => set('correoResponsableManual', e.target.value)}
+                className={errors.correoResponsableManual ? 'invalid' : ''}
+              />
+              <p style={{ fontSize: 11, color: 'var(--white-muted)', marginTop: 5, fontFamily: 'var(--font-mono)' }}>
+                Persona que debe recibir la notificación para crear el acceso.
+              </p>
+              {errors.correoResponsableManual && <p className="field-error">{errors.correoResponsableManual}</p>}
+            </div>
           )}
 
           <div className="field">
